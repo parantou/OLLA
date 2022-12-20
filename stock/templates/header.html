@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<style>
+a{text-decoration:none;}
+.inner12{width:1200px; margin:0 auto;}
+.inner13{width:1300px; margin:0 auto;}
+.inner17{width:1700px; margin:0 auto;}
+.header{
+	margin:0 auto;
+	position: relative;
+	height:80px;
+	width:100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+
+.rightWrap{position: absolute; right:0; cursor:pointer;}
+.rightWrap ul{font-size:0; padding:0 !important;}
+.rightWrap ul li{display:inline-block; font-size:16px;}
+.rightWrap ul li:last-child{padding-left:15px;}
+.rightWrap ul li a{display:inline-block; color:#000000 !important;}
+</style>
+<body>
+<!--header(s)-->
+	<div class="header inner17">
+		<h2><a href="/"><img src="/static/images/logo.png" alt="" /></a></h2>
+		<div class="rightWrap">
+		<ul>
+            <li><a href="/board/list">게시판</a></li>
+            {% if not 'm_id' in request.session %}
+            <li><a href="/user/join" style="padding-left:15px;">회원가입</a></li>
+            <li><a href="/user/login">로그인</a></li>
+            {% else %}
+            {{ request.session.m_id }} 님 어서오세요.
+            <li><a href="/user/logout">{{ m_id }} (로그아웃)</a></li>
+            {% endif %}
+      	</ul>
+      
+			
+		</div>
+	</div>
+<!--header(e)-->
+</body>
+</html>

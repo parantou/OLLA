@@ -1,0 +1,227 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+html,body{overflow-x:hidden !important;}
+a{text-decoration:none;}
+input:focus {outline:none;}
+.inner12{width:1200px; margin:0 auto;}
+.inner13{width:1300px; margin:0 auto;}
+.inner17{width:1700px; margin:0 auto;}
+.mb-20{margin-bottom:20px;}
+.form_w30 {width:30% !important;}
+
+input:focus {outline: none;}
+select:focus {outline: none;}
+textarea:focus {outline: none;}
+button:focus {outline: none;}
+
+input[type="text"], 
+input[type="password"],
+textarea{  
+appearance: none;
+-webkit-appearance: none;
+-webkit-border-radius: 0;
+}
+select {
+-webkit-appearance: none;
+-moz-appearance: none; 
+appearance: none;
+}
+
+input[type="text"]{width:100%; height:45px; line-height:45px; padding:0 10px; border:1px solid #dcdcdc; 
+box-sizing:border-box; 
+-webkit-box-sizing:border-box; 
+-moz-box-sizing:border-box;
+}
+input[type="text"]::-webkit-input-placeholder {color:#7e7c7c; font-weight:300;}
+input[type="text"]:-input-placeholder {color:#7e7c7c; font-weight:300;}
+input[type="text"]:-ms-input-placeholder {color:#7e7c7c; font-weight:300;}
+input[type="text"]::-moz-input-placeholder {color:#7e7c7c; font-weight:300;}
+
+input[type="password"]{width:100%; height:45px; line-height:45px; padding:0 10px; border:1px solid #dcdcdc; 
+box-sizing:border-box; 
+-webkit-box-sizing:border-box; 
+-moz-box-sizing:border-box;
+}
+input[type="password"]::-webkit-input-placeholder {color:#7e7c7c; font-weight:300;}
+input[type="password"]:-input-placeholder {color:#7e7c7c; font-weight:300;}
+input[type="password"]:-ms-input-placeholder {color:#7e7c7c; font-weight:300;}
+input[type="password"]::-moz-input-placeholder {color:#7e7c7c; font-weight:300;}
+
+input[type="date"]{height:45px; line-height:45px; padding:0 10px; border:1px solid #dcdcdc; 
+box-sizing:border-box; 
+-webkit-box-sizing:border-box; 
+-moz-box-sizing:border-box;
+}
+
+textarea{width:100%; height:150px; padding:10px; border:1px solid #dcdcdc; resize:none;
+box-sizing:border-box; 
+-webkit-box-sizing:border-box; 
+-moz-box-sizing:border-box;
+}
+
+select{width:100%; height:45px; padding:0 10px; border:1px solid #dcdcdc;
+box-sizing:border-box; background:url(../image/arrow_control.png) no-repeat 99% 50%;
+-webkit-box-sizing:border-box; 
+-moz-box-sizing:border-box;
+-webkit-appearance:none;
+-moz-appearance:none;
+-o-appearance:none;appearance:none;
+}
+select::-ms-expand{display: none;}
+
+/*인덱스*/
+.header{
+	margin:0 auto;
+	position: relative;
+	height:80px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.rightWrap{position: absolute; right:0; cursor:pointer;}
+.rightWrap ul{font-size:0}
+.rightWrap ul li{display:inline-block; font-size:16px;}
+.rightWrap ul li:last-child{padding-left:15px;}
+.rightWrap ul li a{display:inline-block; color:#000000 !important;}
+
+
+/*로그인*/
+.main-container{
+	width:100%;
+	min-height: 100vh;
+	display:flex;
+	flex-direction:column;
+	justify-content: center;
+	align-items:center;
+}
+.main-container .main-wrap{
+	width:800px;
+
+}
+
+
+.main-container .main-wrap .logo-wrap{
+	display:flex;	
+	flex-direction: column;
+	align-items: center;
+}
+
+.login-input-section-wrap{
+	padding-top: 30px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.login-input-wrap{
+	width: 465px;
+	height :48px;
+	border: solid 1px #cbcbcb;
+	background: white;
+}
+.password-wrap{
+	margin-top: 10px;
+}
+.login-input-wrap input{
+	border: none;
+	width:430px;
+	margin-top: 10px;
+	font-size: 14px;
+	margin-left: 10px;
+	height:30px;
+}
+.login-button-wrap {
+	padding-top: 10px;
+	
+}
+.login-button-wrap input{
+	width: 465px;
+	height :48px;
+	font-size: 18px;
+	background:#225088;
+	color: white;
+	border: solid 0px;
+	cursor:pointer;
+	transition: all 0.1s;
+}
+.login-button-wrap input:hover{
+	background-color:#fff; border: solid 1px #777; color:#000;
+	transition: all 0.1s;
+}
+
+.signup-button-wrap {
+	padding-top: 10px;
+	
+}
+.signup-button-wrap input{
+	width: 465px;
+	height :48px;
+	font-size: 18px;
+	background:#777;
+	color: white;
+	border: solid 0px;
+	cursor:pointer;
+	transition: all 0.1s;
+}
+.signup-button-wrap input:hover{
+	background-color:#fff; border: solid 1px #777; color:#000;
+	transition: all 0.1s;
+}
+
+/*회원가입*/
+.join{margin-top:80px;}
+.join h2{margin-bottom:30px; font-size:24px;}
+
+.join table{width:100%; border-top:2px solid #000; margin-bottom:40px;}
+.join table th,
+.join table td{padding:20px 15px; border-bottom:1px solid #ddd;}
+.join table th{background:#f5f5f5; color:#000;}
+.join table td > span{font-size:15px; color:#666}
+.join table td select.form_w15{background-position:90% 50%;}
+
+.join .btnWrap{text-align:center;}
+.join .btnWrap button{width:150px; height:60px; border:1px solid #ddd; border-radius:50px;}
+.join .btnWrap button.btn:hover{background:#fff; color:#000;}
+.join .btnWrap button.btn_cancel{background:#666; color:#fff;}
+.join .btnWrap button.btn_ok{background:#ff6600; color:#fff;}
+
+.nametxt{border-radius:10px; 
+border-bottom:2px solid #000 !important; 
+border-top:0 !important;
+border-left:0 !important;
+border-right:0 !important;
+}
+
+.signup-button{
+	width: 250px;
+	height :45px;
+	display: flex;
+	align-items:center;
+	justify-content: center;
+	font-size: 15px;
+	background:#000;
+	color: white;
+	border: solid 0px;
+	cursor:pointer;
+	transition: all 0.1s;
+	padding-top:0;
+	margin:0 auto;
+}
+.signup-button:hover{
+	background-color:#fff; border: solid 1px #777; color:#000;
+	transition: all 0.1s;
+}
+
+
+/*board*/
+.insertBtn{
+	text-align:right !important;
+}
+
+.insertBtn a{
+	display:block;
+}
+
+
+
