@@ -8,6 +8,11 @@ urlpatterns = [
     path("join", views.joinFunc), 
     path("login", views.loginFunc), 
     path("logout", views.logoutFunc), 
+    path("profile", views.profileFunc), 
+    path("upprofile", views.upProfileFunc), 
+    path("upprofileok", views.upProfileOkFunc), 
+    path("delprofile", views.delProfileFunc), 
+    path("delprofileok", views.delProfileOkFunc), 
     
     path('list', views.listFunc),
     path('insert', views.insertFunc), 
@@ -21,6 +26,5 @@ urlpatterns = [
     
     path('commentinsert', views.commentInsert),     
     path('commentdelete', views.commentDelete),
-   
 ]
  

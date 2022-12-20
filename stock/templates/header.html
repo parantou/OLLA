@@ -38,6 +38,7 @@ a{text-decoration:none;}
             <li><a href="/user/login">로그인</a></li>
             {% else %}
             {{ request.session.m_id }} 님 어서오세요.
+            <li><a href="/user/profile">마이페이지</a></li>
             <li><a href="/user/logout">{{ m_id }} (로그아웃)</a></li>
             {% endif %}
       	</ul>

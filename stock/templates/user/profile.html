@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<table>
+<colgroup>
+<col width="20%">
+<col width="*">
+</colgroup>
+	<tbody>
+		<tr>
+		    <th>아이디</th>
+		    <td>{{ request.session.m_id }}</td>
+		</tr>
+		<tr>
+		    <th>이름</th>
+		    <td>{{ profile_data.name }}</td>
+		</tr>
+		<tr>
+	  		<th>핸드폰</th>
+	  		<td>{{ profile_data.phone }}</td>
+		</tr>
+		<tr>
+		    <th>이메일</th>
+		    <td>{{ profile_data.email }}</td>
+		</tr>
+		<tr>
+		    <th>가입일</th>
+		    <td>{{ profile_data.reg_date}}</td>
+		</tr>
+	</tbody>
+</table>
+<a href="/board/upprofile">회원정보 수정</a>
+<a href="/board/delprofile">회원 탈퇴</a>
+{% if message %}
+<script>alert('{{ message }}');</script>
+{% endif %}
+</body>
+</html>
