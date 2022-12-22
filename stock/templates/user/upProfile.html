@@ -3,11 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<!-- custom CSS -->
+<link rel="stylesheet" type="text/css" href="/static/css/sub.css">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
 </head>
-<body>
-<form name="f1" method="post" id="signupForm">
+<style>
+table{border-spacing: 0px}
+.proBtn{display: flex;
+	justify-content: center;
+	align-items: center;}
+.proBtn a{text-decoration:none;}
+.proBtn a:first-child{margin-right:10px;}
+</style>
+<body style="margin:0 auto">
+{% include 'header.html' %}
+<div class="inner12">
+	<div class="join">
+	<form name="f1" method="post" id="signupForm">
 	{% csrf_token %}
 	<table>
 	<colgroup>
@@ -43,10 +56,13 @@
 			</tr>
 		</tbody>
 	</table>
-<button type="submit" onclick="update()">수정</button>
-<button type="button" onclick="location.href='/user/profile'">취소</button>
+<div class="proBtn">
+<a href=""><button class="signup-button" type="submit" onclick="update()">수정</button></a>
+<a href=""><button class="signup-button" type="button" onclick="location.href='/user/profile'">취소</button></a>
+</div>
 </form>
-
+</div>
+</div>
 <script>
 function update() {
     var form = document.f1;

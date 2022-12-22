@@ -5,22 +5,38 @@
 <title>Insert title here</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body style="margin: 20px">
-<div style="width: 95%; text-align: center;">
-<h3>** 게시판 목록 **</h3>
+<style>
+botton{border-radius:0 !important;}
+.btn{border-radius:0 !important;}
+.darkBtn{border-radius:0 !important;}
+a{text-decoration:none; color:#000;}
+.inner17{width:1700px; margin:0 auto;}
+td:nth-child(1){width:10%;}
+td:nth-child(2){width:40%;}
+td:nth-child(3){width:15%;}
+td:nth-child(4){width:20%;}
+td:nth-child(5){width:15%;}
+.darkBtn{background:#212529; color:#fff; transition: all 0.1s; border-radius: 0.25rem; border:none;} 
+.darkBtn:hover{background:#4d5154; transition: all 0.1s;}
+h3{font-size:24px; margin-top:50px}
+</style>
+<body>
+{% include 'header.html' %}
+<div class="container">
+<h3>게시판 목록</h3>
+<div style="text-align:right !important; margin-bottom:15px">
+	<a href="/board/insert"><button class="btn btn-dark btn-sm">글쓰기</button></a>
 </div>
 
-<a href="/board/insert">글쓰기</a>
-
-<table style="width: 95%" class="table">
-  <tr>
+<table style="margin:0 auto; text-align: center;" class="table">
+  <tr style="background:#666; color:#fff;">
   	<th>번호</th><th>제 목</th><th>작성자</th><th>작성일</th><th>조회수</th>
   </tr>
   {% if datas %}
   {% for d in datas %}
   <tr>
   	<td>{{d.id}}</td>
-  	<td>
+  	<td style="text-align:left !important;">
   		<a href="/board/content?id={{d.id}}&page={{datas.number}}">{{d.title}}</a> 	
   	</td>
   	<td>{{d.bt_id}}</td>
@@ -30,40 +46,48 @@
   {% endfor %}
   
   <!-- 페이징 처리 -->
-  <tr>
-  	<td colspan="5" style="text-align: center;">
-  	{% if datas.paginator.num_pages > 1 %}
-  		<div>
-  		{% if datas.has_previous %}
-  			<a href="/board/list?page={{datas.previous_page_number}}">&laquo;이전</a>
-  		{% endif %}
-  		{% if datas.has_next %}
-  			<a href="/board/list?page={{datas.next_page_number}}">다음&raquo;</a>
-  		{% endif %}
-  		&nbsp;&nbsp;
-  		(페이지:{{datas.number}} / {{datas.paginator.num_pages}})
-  		</div>
-  	{% endif %}
-  	</td>
+  <tr style="border:1px solid #fff !important">
+     <td colspan="5" style="text-align: center; padding-right:0;">
+     {% if datas.paginator.num_pages > 1 %}
+     <div style="position:relative; margin-top:10px">
+     	<div>
+	     {% if datas.has_previous %}
+	        <a href="/board/list?page={{datas.previous_page_number}}">
+	        	<button class="btn btn-dark btn-sm">이전</button>
+	        </a>
+	     {% endif %}
+	     {% if datas.has_next %}
+	        <a href="/board/list?page={{datas.next_page_number}}">
+	        	<button class="btn btn-dark btn-sm">다음</button>
+	        </a>
+	     {% endif %}
+	     &nbsp;&nbsp;
+	     <div style="text-align:right !important; display:block; position:absolute; top:-5px; right:0">(페이지 : {{datas.number}} / {{datas.paginator.num_pages}})</div>
+     	</div>
+     </div>
+     {% endif %}
+     </ul>
+     </td>
   </tr>
   {% else %}
   <tr>
   	<td colspan="5">글이 없어요</td>
   </tr>
   {% endif %}
-  <tr>
+  <tr style="border:1px solid #fff !important">
   	<td colspan="5" style="text-align: center;">
   	<form action="/board/search" method="post">{% csrf_token %}
   	검색 : 
-  	<select name="s_type">
+  	<select name="s_type" style="width:75px; height:30px;">
   		<option value="title" selected="selected">글제목</option>
   		<option value="bt_id">작성자</option>
   	</select>
-  	<input type="text" name="s_value">
-  	<input type="submit" value="확 인">
+  	<input type="text" name="s_value" style="width:200px; height:30px;">
+  	<input type="submit" value="검 색" class="darkBtn" style="width:60px !important; height:30px !important;">
   	</form>
   	</td>
   </tr>
 </table>
+</div>
 </body>
 </html>
