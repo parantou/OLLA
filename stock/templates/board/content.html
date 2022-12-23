@@ -49,8 +49,8 @@ h3{font-size:24px; margin-top:50px}
 <table class="table">
   <tr style="width: 100%">
   	<td style="text-align: right; padding-right:0 !important;">
-  		<!-- <a href="/board/reply?id={{data_one.id}}"><button class="btn btn-dark btn-sm">답글</button></a> -->
   		{% if request.session.m_id == data_one.bt_id %}
+  		<a href="/board/update?id={{data_one.id}}"><button class="btn btn-dark btn-sm">수정</button></a>
   		<a href="/board/delete?id={{data_one.id}}"><button class="btn btn-dark btn-sm">삭제</button></a>
   		{% endif %}
   		<a href="/board/list?page={{page}}"><button class="btn btn-dark btn-sm">목록</button></a>
