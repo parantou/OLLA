@@ -26,5 +26,7 @@ urlpatterns = [
     
     path('commentinsert', views.commentInsert),     
     path('commentdelete', views.commentDelete),
+    
+    path('show', views.stockShow),
 ]
  
