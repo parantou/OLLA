@@ -10,7 +10,7 @@ import numpy as np
 from django.conf import settings
 import os
 from sklearn.preprocessing import MinMaxScaler
-from _ast import If
+
 # Create your views here.
 def mainFunc(request):
     return render(request,'main.html')
