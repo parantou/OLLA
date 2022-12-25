@@ -1,0 +1,29 @@
+@charset "UTF-8";
+
+/*header*/
+.rightWrap{position: absolute; right:40px; top:50%; transform:translateY(-50%); cursor:pointer;}
+.rightWrap ul{font-size:0; margin-bottom:0 !important;}
+.rightWrap ul li{display:inline-block; padding-left:15px;}
+
+.rightWrap ul li a{font-size:16px; color:#000000; font-weight:500;}
+.header h2 a img{width:70px; }
+
+.header{
+	position: relative; 
+	width: 100%; 
+	height:60px; 
+	border-bottom:1px solid #ededed;
+	box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	margin: px;
+	padding-left:25px;
+	display: flex;
+	justify-content: left;
+	align-items: center;/* 
+	background-color: white; #DFEBE4
+    opacity:0.8; 20% 불투명도 */
+}
+.header h2{margin-bottom:8;}
+
+a{text-decoration:none;}

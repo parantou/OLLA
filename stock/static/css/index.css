@@ -1,161 +1,215 @@
 @charset "UTF-8";
-:root{
-	--color-white: #fff;
-	--time-animation: 0.6s;
-}
-@keyframes pulse{
-	0%{
-		transform:translateY(0px)
-	}
-	50%{
-		transform:translateY(25px)
-	}
-	100%{
-		transform:translateY(0px)
-	}
-}
-html{
-	scrollbar-width:none
+@font-face {
+    font-family: 'ChivoMono';
+    src: url('../fonts/ChivoMono-VariableFont_wght.ttf') format('truetype');
 }
 
+html,body{
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+}
+html::-webkit-scrollbar {
+    display: none; /* 크롬, 사파리, 오페라, 엣지 */
+}
 body{
-	margin:0;
-	padding:0;
-	font-family:sans-serif;
-	overflow:hidden scroll;
-	-ms-overflow-style:none
-}
-body::-webkit-scrollbar{
-	display:none
-}
-.layout{
-	width:100%;
-	height:calc(100vh * 3);
-	position:relative
-}
-.layout .section-stick{
-	margin:auto;
-	position:fixed;
-	right:50px;
-	bottom:45%;
-	display:flex;
-	flex-direction:column;
-	row-gap:10px;
-	align-items:center;
-	justify-content:flex-start;
-	z-index:1000
-}
-.layout .section-stick .stick,
-.layout .section-stick .active{
-	width:5px;
-	height:5px;
-	border:none;
-	border-radius:9px
-}
-.layout .section-stick .stick{
-	position:relative;
-	background-color:rgba(255,255,255,.4);
-	transition:all var(--time-animation) ease-in-out
-}
-.layout .section-stick .active{
-	position:absolute;
-	background-color:var(--color-white);
-	box-shadow:0 0 12px 1px var(--color-white);
-	backdrop-filter:blur(3px);
-	-webkit-backdrop-filter:blur(3px)
-}
-.layout section{
-	width:100%;
-	height:100vh;
-	position:fixed;
-	top:0;
-	left:0;
-	right:0;
-	display:flex;
-	align-items:center;
-	justify-content:center;
-	text-align:center;
-	color:var(--color-white);
-	font-size:80px;
-	font-weight:600;
-	transform:translateY(100vh);
-	transition:all var(--time-animation) ease-in-out;
-	z-index:0
-}
-.layout section .home{
-	display:flex;
-	flex-direction:column;
-	row-gap:45px;
-	align-items:center
-}
-.layout section .home svg{
-	animation:pulse 1.4s linear infinite normal
-}
-.layout .s1{
-	background-color:#4d2536;
-	transform:translateY(0);
-	z-index:4
-}.layout .s2{
-	background-color:#02486b;
-	z-index:3
-}.layout .s3{
-	background-color:#171716;
-	z-index:2
-}.layout .s4{
-	background-color:#154621;
-	z-index:1
-} 
-#author{
-	margin:auto;
-	position:fixed;
-	bottom:40px;
-	left:40px;
-	display:flex;
-	column-gap:10px;
-	align-items:center;
-	color:var(--color-white);
-	font-size:25px;
-	z-index:10
-}
-#author svg{
-	font-size:40px
-}
-@media screen and (max-width:576px){
-	body::-webkit-scrollbar{
-		width:0;
-		background:0 0;
-		-webkit-appearance:none
-	}
-	.layout .section-stick{
-		right:20px;
-		bottom:20px;
-		transform:scale(.7)
-	}
-	.layout section{
-		font-size:40px
-	}
-	#author{
-		left:20px;
-		bottom:20px;
-		font-size:18px
-	}
-	#author svg{
-		font-size:30px
-	}
+	/* overflow-x: hidden;
+	overflow-y: hidden; */
+	font-family: 'ChivoMono';
+	background-color: #f9fafb;
 }
 
-/*인덱스*/
+/*header*/
+/* .rightWrap{position: absolute; right:40px; top:50%; transform:translateY(-50%); cursor:pointer;}
+.rightWrap ul{font-size:0; margin-bottom:0 !important;}
+.rightWrap ul li{display:inline-block; padding-left:15px;}
+
+.rightWrap ul li a{font-size:16px; color:#000000; font-weight:500;}
+.header h2 a img{width:70px; }
+
 .header{
-	margin:0 auto;
-	position: relative;
-	height:80px;
+	position: relative; 
+	width: 100%; 
+	height:60px; 
+	border-bottom:1px solid #ededed;
+	box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	margin: px;
+	padding-left:25px;
+	display: flex;
+	justify-content: left;
+	align-items: center;
+	background-color: white; #DFEBE4
+    opacity:0.8; 20% 불투명도
+}
+.header h2{margin-bottom:8;}
+
+a{text-decoration:none;} */
+
+
+/* body  */
+#wrap{
+    min-height: 100%;
+    position: relative;
+    padding-bottom: 400px;
+}
+
+#content-wrap{
+	margin: 30px auto 20px;
+	padding: 0px auto;
+	width: 80%;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	align-items: center;
+	 /* 
+	background-image: url(/static/images/test.png);
+	background-repeat:no-repeat;
+	background-position:center;
+	background-size:cover; */
+}
+
+/* 상단 문구 */
+.index_txt p{
+	text-align: center;
+	font-size:15px;
+	margin-top:10px;
+	padding: 0px;
+	width: 600px; 
+}
+.index_txt span{
+	font-size:35px;
+}
+
+/* 종목 검색  - 움직이는 버전*/
+/* .search-box {
+  생략
+  background-color: #eee;
+  height: 40px;
+  padding: 0px;
+}
+.search-btn {
+  color: #EDEDED;
+  float: right;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #225088;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.search-txt {
+  float: left;
+  padding: 0;
+  background: none;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 15px;
+  line-height: 40px;
+}
+
+.search-box {
+  생략
+  border-radius: 40px; 추가
+}
+
+.search-txt {
+  생략
+  width: 0; 추가
+  transition: 0.5s; 추가
+}
+.search-box:hover > form .search-txt {
+  width: 200px;
+  padding-left:20px;
+}
+.search-box:hover > form .search-btn {
+  background: #225088;
+} */
+
+/* 종목 검색  - 고정된 버전*/
+.search-box {
+  /* 생략 */
+  background-color: #eee;
+  height: 40px;
+  padding: 0px;
+  border-radius: 40px; 
+}
+.search-btn {
+  color: #EDEDED;
+  float: right;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #225088;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.search-txt {
+  float: left;
+  padding: 0;
+  background: none;
+  border: none;
+  outline: none;
+  color: black;
+  font-size: 15px;
+  line-height: 40px;
+  width: 200px;
+  padding-left:20px;
+}
+
+.search-btn:hover{
+  background: #94c9e4;
+  color: black;	
+}
+
+/* footer */
+footer{
+	position : absolute;
+	width: 100%;
+    bottom: 0;
+}
+#img_box{
+	width : 90%;
+    height: 400px; 
+    margin: auto;
+    padding: auto;
+}
+#index_img{
+	width : 100%;
+    height: 100%; 
+    object-fit:contain;
+	
+}
+#bottom_info{
+	/* position : absolute; */
+	width: 100%;
+	height: 70px;
+    /* bottom: 0; */
+	background-color: #333743;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
-.rightWrap{position: absolute; right:0; cursor:pointer;}
-.rightWrap ul{font-size:0}
-.rightWrap ul li{display:inline-block; font-size:16px;}
-.rightWrap ul li:last-child{padding-left:15px;}
-.rightWrap ul li a{display:inline-block; color:#000000 !important;}
+.info_txt{
+	font-size:10px;	
+	margin-bottom:0px;
+	color:white;
+}
+
+/* 애니메이션 */
+.txt_fadeout{
+	animation: fadeOut; /* referring directly to the animation's @keyframe declaration */
+  	animation-duration: 1.3s;
+}
+.input_expend {
+  width: 500px;
+  transition: 0.8s;
+}
+
+/* result */

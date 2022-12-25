@@ -75,6 +75,48 @@ def logoutFunc(request):
     request.session.flush()
     return redirect('/')
 
+def profileFunc(request):
+    profile_data = Member.objects.get(id=request.session.get('m_id'))
+    return render(request, 'user/profile.html', {'profile_data':profile_data})
+
+def upProfileFunc(request):
+    profile_data = Member.objects.get(id=request.session.get('m_id'))
+    return render(request, 'user/upProfile.html', {'profile_data':profile_data}) 
+
+def upProfileOkFunc(request):
+    try:
+        profile_data = Member.objects.get(id=request.session.get('m_id'))
+        upProfile = Member.objects.get(id=request.session.get('m_id'))
+        # 비밀번호 비교 후 수정 여부 결정
+        print(request.POST.get('pwd'))
+        if upProfile.pwd == request.POST.get('pwd'):
+            upProfile.name = request.POST.get('name')
+            upProfile.phone = request.POST.get('phone')
+            upProfile.email = request.POST.get('email')
+            upProfile.save()
+        else:
+            return render(request, 'user/upProfile.html', {'message':'비밀번호가 일치하지 않습니다.', 'profile_data':profile_data})
+    except Exception as e:
+        return render(request, 'board/error.html')
+    
+    return redirect('/user/profile')   # 수정 후 목록 보기
+
+def delProfileFunc(request):
+    try:
+        del_profile = Member.objects.get(id=request.session.get('m_id'))
+    except Exception as e:
+        return render(request, 'board/error.html')
+    
+    return render(request, 'user/delProfile.html', {'del_profile':del_profile})   
+    
+def delProfileOkFunc(request):
+    del_profile = Member.objects.get(id=request.session.get('m_id'))
+    
+    if del_profile.pwd == request.POST.get('del_pwd'):
+        del_profile.delete();
+        return redirect('/user/logout')   # 삭제 후 목록 보기
+    else:
+        return render(request, 'user/delProfile.html', {'message':'비밀번호가 일치하지 않습니다.', 'del_profile':del_profile})
 
 
 #board

@@ -70,7 +70,7 @@ box-sizing:border-box; background:url(../image/arrow_control.png) no-repeat 99% 
 select::-ms-expand{display: none;}
 
 /*인덱스*/
-.header{
+/* .header{
 	margin:0 auto;
 	position: relative;
 	height:80px;
@@ -84,7 +84,7 @@ select::-ms-expand{display: none;}
 .rightWrap ul li{display:inline-block; font-size:16px;}
 .rightWrap ul li:last-child{padding-left:15px;}
 .rightWrap ul li a{display:inline-block; color:#000000 !important;}
-
+ */
 
 /*로그인*/
 .main-container{
