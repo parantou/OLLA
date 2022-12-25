@@ -1,7 +1,9 @@
 @charset "UTF-8";
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital@0;1&display=swap');
 
-
+html::-webkit-scrollbar {
+    display: none; /* 크롬, 사파리, 오페라, 엣지 */
+}
 /*header*/
 .rightWrap{position: absolute; right:40px; top:50%; transform:translateY(-50%); cursor:pointer;}
 .rightWrap ul{font-size:0; margin-bottom:0 !important; font-family: 'Noto Sans KR', sans-serif !important;}
@@ -12,7 +14,7 @@
 
 .header{
 	position: relative; 
-	width: 100%; 
+	width: 100% !important; 
 	height:60px; 
 	border-bottom:1px solid #ededed;
 	box-sizing:border-box;
