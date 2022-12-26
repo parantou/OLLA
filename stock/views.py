@@ -346,8 +346,9 @@ def stockShow(request):
 
     result= int(scaler.inverse_transform(np.array(pred[0]).reshape(1,-1))[0][0])
     url= cloudShow(file_path)
-    graphShow(file_path, stockName, result)
-    return render(request, 'show.html', {'result':result,'url':url})
+    stock_close_df, pred = graphShow(file_path, stockName, result)
+
+    return render(request, 'show.html', {'result':result,'url':url, 'stock_close_df': stock_close_df, 'pred':pred})
 
 def cloudShow(file_path):
     if "kia_model" in str(file_path):
@@ -383,15 +384,15 @@ def graphShow(file_path, stockName, result):
         df['Close'].plot()
         stock_close_df.plot()
         print(stock_close_df[:-1])
-        
-        plt.figure()
-        plt.plot(stock_close_df, 'r--' ,label='predicted stock price')
-        plt.plot(stock_close_df[:-1], color='blue', label='real stock price') 
-        # plt.plot(stock_close_df[-1:], 'r--', label='predicted stock price')
-        plt.title('Predicted Stock Price')
-        plt.xlabel('date')
-        plt.ylabel('stock price')
-        plt.legend(loc='best')
-        # plt.show()
-        graph = plt.savefig('/static/images/prediction_graph.png')
-    return graph
+        pred = stock_close_df[-1:]
+        # plt.figure()
+        # plt.plot(stock_close_df, 'r--' ,label='predicted stock price')
+        # plt.plot(stock_close_df[:-1], color='blue', label='real stock price') 
+        # # plt.plot(stock_close_df[-1:], 'r--', label='predicted stock price')
+        # plt.title('Predicted Stock Price')
+        # plt.xlabel('date')
+        # plt.ylabel('stock price')
+        # plt.legend(loc='best')
+        # # plt.show()
+        # graph = plt.savefig('/static/images/prediction_graph.png')
+    return stock_close_df, pred
