@@ -352,11 +352,11 @@ def stockShow(request):
     
     #stock_close_df, pred은 dataframe type
     stock_close_df, pred = graphShow(file_path, stockName, result) 
-    print('stock_close_df : ',stock_close_df)
+    print('stock_close_df : ',stock_close_df) #전체
     result_date = np.array(stock_close_df['Date']).tolist() #날짜만
     print('result_date : ',result_date)
-    result_Close = np.array(stock_close_df['Close']).tolist() #종가만
-    result_pred = pred['Close'][:-1] #예측한 다음날 종가
+    result_Close = np.array(stock_close_df['Close'][:-1]).tolist() #백일 종가만
+    result_pred = pred['Close'].values[0] #예측한 다음날 종가
     
     return render(request, 'show.html', {'result':result,'url':url, 'result_date': result_date, 'result_Close': result_Close,  'pred':result_pred})
     
@@ -561,9 +561,9 @@ def graphShow(file_path, stockName, result):
             
             stock_close_df['Date'] = stock_close_df['Date'].dt.strftime("%Y-%m-%d")
         print('---------------------')
-        print(stock_close_df)
-        print(stock_close_df[-1:])
-        print(stock_close_df[:-1])
+        print(stock_close_df) #전체
+        print(stock_close_df[-1:]) #다음날
+        print(stock_close_df[:-1]) # 백일
         pred = stock_close_df[-1:]
 
     return stock_close_df, pred

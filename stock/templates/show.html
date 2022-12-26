@@ -1,6 +1,5 @@
 <div> 다음날 예측 종가는 {{result}} 입니다. </div>
 <img src="/static/images/{{url}}.png"  width=500, height=400 >
-<div>
   <canvas id="myChart"></canvas>
 </div>
 
@@ -9,25 +8,38 @@
 
   new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: [
-	          {% for date in result_date %}
-	             "{{ date }}",
-	      	  {% endfor %}
-    	  	  ],
-      datasets: [{
-        label: '# of Votes',
-        data: [
-	          {% for data in result_Close %}
-	             "{{ data}}",
-	      	  {% endfor %}
-        	  ],
-        borderWidth: 1,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointHoverRadius: 5
-      }]
-    },
+    data:{
+	      labels: [
+		          {% for date in result_date %}
+		             "{{ date }}",
+		      	  {% endfor %}
+	    	  	  ],
+	      datasets: [
+	    	  {
+		        label: '100일 종가',
+		        type:'line',
+		        data: [
+			          {% for data in result_Close %}
+			             "{{ data}}",
+			      	  {% endfor %}
+		        	  ],
+		        borderWidth: 1,
+		        pointStyle: 'circle',
+		        pointRadius: 3,
+		        pointHoverRadius: 5},
+		        {
+			        label: 'nextday',
+			        type:'line',
+			        data: ["{{pred}}"],
+			        borderWidth: 1,
+			        borderDash: [2, 5],
+			        borderColor: 'red',
+			        pointStyle: 'circle',
+			        pointRadius: 3,
+			        pointHoverRadius: 5
+	      		}
+	    ]
+	},
     options: {
         responsive: true,
         plugins: {
