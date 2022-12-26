@@ -349,9 +349,16 @@ def stockShow(request):
     result=int(scaler.inverse_transform(pred_y.reshape(1,-1))[0][0])
     
     url= cloudShow(file_path)
-    stock_close_df, pred = graphShow(file_path, stockName, result)
-
-    return render(request, 'show.html', {'result':result,'url':url, 'stock_close_df': stock_close_df, 'pred':pred})
+    
+    #stock_close_df, pred은 dataframe type
+    stock_close_df, pred = graphShow(file_path, stockName, result) 
+    print('stock_close_df : ',stock_close_df)
+    result_date = np.array(stock_close_df['Date']).tolist() #날짜만
+    print('result_date : ',result_date)
+    result_Close = np.array(stock_close_df['Close']).tolist() #종가만
+    result_pred = pred['Close'][:-1] #예측한 다음날 종가
+    
+    return render(request, 'show.html', {'result':result,'url':url, 'result_date': result_date, 'result_Close': result_Close,  'pred':result_pred})
     
 # 10일치 주가 및 보조 데이터 추출
 def getStockData(stockName):
@@ -528,41 +535,35 @@ def cloudShow(file_path):
 def graphShow(file_path, stockName, result):
     if "kia_model" in str(file_path):
         
-        start_date = date.datetime.today()  # 오늘 날짜
+        start_date = datetime.today()  # 오늘 날짜
         print(start_date)
         print(start_date.weekday())
         d_day = 100
-        target_date = start_date - date.timedelta(d_day)  # 100일전 날짜
+        target_date = (start_date - timedelta(d_day)).strftime("%Y-%m-%d")  # 100일전 날짜
         
         # 입력받은 주가로 100일전 ~ 오늘 날 까지의 주가 데이터 출력
-        df =fdr.DataReader(stockName, target_date.date(), start_date.date())
+        df =fdr.DataReader(stockName, target_date, start_date.strftime("%Y-%m-%d"))
         pred = result
         stock_close_df = df[['Close']]
-        # kia_close.to_csv("kia_close.csv")
-        print(stock_close_df)
+        stock_close_df.reset_index(inplace=True)
+
         # 데이터 추가해서 원래 데이터프레임에 저장하기
         if start_date.weekday() > 4:
             start_date += date.timedelta(days=8 - start_date.isoweekday())
             print(start_date)
-            dict_data = pd.DataFrame({'Close':pred}, index=[start_date])
+            dict_data = pd.DataFrame({'Date':[start_date],'Close':[pred]})
             stock_close_df = stock_close_df.append(dict_data)
         else:
-            dict_data = pd.DataFrame({'Close':pred}, index=[start_date])
+            start_date += timedelta(days=1)
+            print('start_date', start_date)
+            dict_data = pd.DataFrame({'Date':[start_date],'Close':[pred]})
             stock_close_df = stock_close_df.append(dict_data)
+            
+            stock_close_df['Date'] = stock_close_df['Date'].dt.strftime("%Y-%m-%d")
         print('---------------------')
+        print(stock_close_df)
         print(stock_close_df[-1:])
-        df['Close'].plot()
-        stock_close_df.plot()
         print(stock_close_df[:-1])
         pred = stock_close_df[-1:]
-        # plt.figure()
-        # plt.plot(stock_close_df, 'r--' ,label='predicted stock price')
-        # plt.plot(stock_close_df[:-1], color='blue', label='real stock price') 
-        # # plt.plot(stock_close_df[-1:], 'r--', label='predicted stock price')
-        # plt.title('Predicted Stock Price')
-        # plt.xlabel('date')
-        # plt.ylabel('stock price')
-        # plt.legend(loc='best')
-        # # plt.show()
-        # graph = plt.savefig('/static/images/prediction_graph.png')
+
     return stock_close_df, pred

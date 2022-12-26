@@ -1,5 +1,41 @@
 <div> 다음날 예측 종가는 {{result}} 입니다. </div>
 <img src="/static/images/{{url}}.png"  width=500, height=400 >
-<div>이걸로 그래프 그려보자 {{stock_close_df}}, 다음날 {{pred}}</div>
+<div>
+  <canvas id="myChart"></canvas>
+</div>
 
+<script>
+  const ctx = document.getElementById('myChart');
 
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [
+	          {% for date in result_date %}
+	             "{{ date }}",
+	      	  {% endfor %}
+    	  	  ],
+      datasets: [{
+        label: '# of Votes',
+        data: [
+	          {% for data in result_Close %}
+	             "{{ data}}",
+	      	  {% endfor %}
+        	  ],
+        borderWidth: 1,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointHoverRadius: 5
+      }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: (ctx) => 'Point Style: ' + ctx.chart.data.datasets[0].pointStyle,
+          }
+        }
+      }
+  });
+</script>

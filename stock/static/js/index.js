@@ -3,7 +3,7 @@ $('.search-btn').click(function(){
 	if($('.search-txt').val() == ''){
 		alert('종목명을 입력해주세요.')
 	}else{
-		$('.result_box').fadeOut()
+		clearTxt($('.result_box'))
 		extend()
 		fetchFunc(form)
 	}			
@@ -15,7 +15,7 @@ $('.search-txt').keydown(function(e){
 			alert('종목명을 입력해주세요.')
 			return
 		}else{
-			$('.result_box').fadeOut()
+			clearTxt($('.result_box'))
 			extend()
 			fetchFunc(form)
 		}
@@ -44,6 +44,13 @@ function fetchFunc(form){
 		$('.result_box').html(data);
 		//document.querySelector('#addPwdForm').innerHTML+=data;
 	});
+}
+
+function clearTxt(el){
+	el.fadeOut()
+	setTimeout(function(){
+		el.text('')
+	}, 500)
 }
 
 //함수의 인자로 ajax 전송할 폼의 참조값을 넣어주면 알아서 ajax 전송되도록 하는 함수 
