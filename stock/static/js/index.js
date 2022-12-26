@@ -42,6 +42,7 @@ function fetchFunc(form){
 	}).then(function(data){
 		closeLoading()
 		$('.result_box').html(data);
+		$('.result_box').addClass('txt_fadein')
 		//document.querySelector('#addPwdForm').innerHTML+=data;
 	});
 }
@@ -99,6 +100,7 @@ function openLoading() {
     let loadingImg ='';
     loadingImg += "<div id='loadingImg' style='position:absolute; top: calc(50% - (200px / 2)); width:100%; z-index:99999999;'>";
     loadingImg += " <img src='/static/images/loading.gif' style='position: relative; display: block; margin: 0px auto;'/>";
+    //loadingImg += " <p style='position:relative; top: calc(50% - (200px / 2)); width:100%;display: block;'>데이터 분석중...</p>";
     /* https://loadingapng.com/animation.php?image=4&fore_color=000000&back_color=FFFFFF&size=30x30&transparency=1&image_type=0&uncacher=75.5975991029623 */
     loadingImg += "</div>"; 
     //레이어 추가

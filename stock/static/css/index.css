@@ -220,5 +220,22 @@ footer{
   width: 500px;
   transition: 0.8s;
 }
-
+.txt_fadein{
+	animation: fadeIn; /* referring directly to the animation's @keyframe declaration */
+  	animation-duration: 2s;
+}
 /* result */
+.result_box{
+	width: 100%;
+	margin-top : 40px;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	align-items: center;
+}
+canvas{
+	box-shadow:2px 2px 2px 2px #eee;
+}
+.result1{
+	margin-bottom: 20px;
+}

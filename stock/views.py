@@ -307,7 +307,11 @@ def stockShow(request):
     
     df_KOSPI = fdr.StockListing('KOSPI') 
     #입력한 종목명의 종목코드 찾기
-    stockName=df_KOSPI.loc[df_KOSPI['Name'] == stockName]['Code'].values[0]
+    try:
+        stockName=df_KOSPI.loc[df_KOSPI['Name'] == stockName]['Code'].values[0]
+    except Exception as e:
+        print('error : ',e)
+        return render(request, 'show.html', {'NotFound':'존재하지 않는 종목입니다. 다시 검색해주세요.'})
     
     # 10일치 주가 데이터
     stock_dataset=getStockData(stockName)   
@@ -351,14 +355,14 @@ def stockShow(request):
     url= cloudShow(file_path)
     
     #stock_close_df, pred은 dataframe type
-    stock_close_df, pred = graphShow(file_path, stockName, result) 
-    print('stock_close_df : ',stock_close_df)
-    result_date = np.array(stock_close_df['Date']).tolist() #날짜만
-    print('result_date : ',result_date)
-    result_Close = np.array(stock_close_df['Close']).tolist() #종가만
-    result_pred = pred['Close'][:-1] #예측한 다음날 종가
+    stock_close_df, pred = graphShow(file_path, stockName, result)
+    result_date = np.array(stock_close_df['Date']).tolist() #날짜
+    pred_Close = np.array(stock_close_df['Close']).tolist() #종가+예측
+    real_Close = np.array(stock_close_df['Close'][:-1]).tolist() #종가
+    print('pred_Close : ',pred_Close)
+    print('real_Close : ',real_Close)
     
-    return render(request, 'show.html', {'result':result,'url':url, 'result_date': result_date, 'result_Close': result_Close,  'pred':result_pred})
+    return render(request, 'show.html', {'result':result,'url':url, 'result_date': result_date, 'pred_Close': pred_Close,  'real_Close':real_Close})
     
 # 10일치 주가 및 보조 데이터 추출
 def getStockData(stockName):
