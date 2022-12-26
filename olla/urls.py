@@ -17,13 +17,16 @@ from django.contrib import admin
 from django.urls import path
 from stock import views
 from django.urls.conf import include
+from django.shortcuts import redirect
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.mainFunc), 
-    path('user/', include('stock.urls')),
- 
+    path('user/', include('stock.urls')), 
     path('board/', include('stock.urls')),
     path('stock/', include('stock.urls')),
+    # path('user/', lambda request: redirect('stock/')),
+    # path('user/', RedirectView.as_view(pattern_name='stock/', permanent=False)),
 ]
   
