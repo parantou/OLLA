@@ -539,8 +539,8 @@ def graphShow(file_path, stockName, result):
         print(start_date)
         print(start_date.weekday())
         d_day = 100
-        target_date = (start_date - timedelta(d_day)).strftime("%Y-%m-%d")  # 100일전 날짜
         
+        target_date = (start_date - timedelta(d_day)).strftime("%Y-%m-%d")  # 100일전 날짜
         # 입력받은 주가로 100일전 ~ 오늘 날 까지의 주가 데이터 출력
         df =fdr.DataReader(stockName, target_date, start_date.strftime("%Y-%m-%d"))
         pred = result

@@ -10,7 +10,7 @@ html::-webkit-scrollbar {
 .rightWrap ul li{display:inline-block; padding-left:15px;}
 
 .rightWrap ul li a{font-size:14px; color:#000000; font-weight:500;}
-.header h2 a img{width:50px; }
+.header h2 a img{width:50px;}
 
 .header{
 	position: relative; 
