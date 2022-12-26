@@ -1,15 +1,27 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from stock.models import Member, Comment, BoardTab
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required
+from sklearn.preprocessing import MinMaxScaler
+from urllib import parse
+from dateutil.relativedelta import relativedelta
+from django.conf import settings
+from bs4 import BeautifulSoup
+from argparse import Namespace
+from sklearn.metrics import classification_report
+from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import pickle
 import pandas as pd
 import numpy as np
-from django.conf import settings
 import os
-from sklearn.preprocessing import MinMaxScaler
+import requests
+import re
+import FinanceDataReader as fdr
+import torch
+import torch.nn as nn
 
 # Create your views here.
 def mainFunc(request):
@@ -52,8 +64,8 @@ def loginFunc(request):
  
         # 로그인 체크하기
         rs = Member.objects.filter(id=id, pwd=pwd).first()
-        print(id + '/' + pwd)
-        print(rs)
+        # print(id + '/' + pwd)
+        # print(rs)
  
         #if rs.exists():
         if rs is not None:
@@ -281,74 +293,237 @@ def commentDelete(request):
         return render(request, 'board/content.html', {'data_one':data, 'page':page,'comment_one':comment})
     except Exception as e:
         return render(request, 'board/error.html')
-    
+
+'''
+아나콘다에서 필수 설치 : 
+1. conda install pytorch torchvision torchaudio cpuonly -c pytorch
+2. pip install -U finance-datareader
+3. pip install transformers
+'''
 def stockShow(request):
-    # data = pd.read_csv('/static/models/주가+감성 데이터.csv')
-    stockName='기아'
-    # 테스트해볼 10일데이터: 정규화를 미리해놓은 데이터를 쓰면 안되고 여기서 써야 나중에 inverse도 쓸수있다.
-    x = [[  65300.   ,     812308.  ,           0.   ,          0.008762,
-     2408.27002 ,     717.900024 ,  33849.460938 ,  11049.5,
-     3963.939941  ,  1334.560059 ,      9.574941],
-    [  65500. ,      1411202. ,            0.029052  ,    -0.000828,
-     2433.389893 ,    727.539978 ,  33852.53125 ,   10983.780273,
-     3957.629883 ,   1340.119995  ,     9.65901 ],
-    [  66800. ,      1970987.  ,           0.019316  ,     0.005606,
-     2472.530029,     729.539978,   34589.769531 ,  11468.,
-     4080.110107 ,   1325.369995,       9.551941],
- [  69000.    ,   1086698.   ,          0.   ,          0.009106,
-     2479.840088 ,    740.599976,   34395.011719 ,  11482.450195,
-     4076.570068  ,  1279.800049  ,     9.312411],
- [  68700.  ,     1451053.  ,          -0.030612  ,    -0.000394,
-     2434.330078  ,   732.950012 ,  34429.878906 ,  11461.5,
-     4071.699951 ,   1303.25   ,        9.642597],
- [  66800.  ,     1148365.  ,          -0.013534  ,     0.003971,
-     2419.320068 ,    733.320007 ,  33947.101563,   11239.94043,
-     3998.840088  ,  1299.170044  ,     9.660693],
- [  65200.  ,      825203. ,           -0.007622 ,      0.003429,
-     2393.159912 ,    719.440002 ,  33596.339844 ,  11014.889648,
-     3941.26001  ,   1304.369995 ,      9.543659],
- [  65000. ,       743679.  ,          -0.001536 ,      0.001391,
-     2382.810059,     718.140015,   33597.921875 ,  10958.549805,
-     3933.919922  ,  1319.709961 ,      9.641189],
- [  65200.    ,   1271219.  ,          -0.004615  ,    -0.001748,
-     2371.080078  ,   712.52002  ,  33781.480469,   11082.,
-     3963.51001  ,   1314.099976  ,     9.635365],
- [  65100. ,      1011844.   ,          0.007728  ,     0.003641,
-     2389.040039  ,   719.48999 ,   33781.480469  , 11082.,
-     3963.51001  ,   1316.630005  ,     9.637627]]
-    y =[65200]
+    #입력값 가져오기
+    stockName = request.POST.get('stockName')
+    stockName_en = parse.quote(stockName,encoding='EUC-KR')
+    
+    df_KOSPI = fdr.StockListing('KOSPI') 
+    #입력한 종목명의 종목코드 찾기
+    stockName=df_KOSPI.loc[df_KOSPI['Name'] == stockName]['Code'].values[0]
+    
+    # 10일치 주가 데이터
+    stock_dataset=getStockData(stockName)   
+    
+    #이전 행의 값으로 결측치 채우기
+    stock_dataset.fillna(method= 'ffill',inplace=True)
+    
+    #뉴스==========================================================
+    url = "https://finance.naver.com/news/news_search.naver?rcdate=&q="+stockName_en+"&x=0&y=0&sm=title.basic&pd=4"
+    
+    start_date=stock_dataset.head(1)['Date'][0].strftime("%Y-%m-%d")
+    end_date=stock_dataset.tail(1)['Date'][9].strftime("%Y-%m-%d")
+
+    financialNews(url +"&stDateStart="+start_date+"&stDateEnd="+end_date+"&page=")
+    NaverFinanceSI_dataset = financialNews(url +"&stDateStart="+start_date+"&stDateEnd="+end_date+"&page=")
+    
+    NaverFinanceSI_dataset.reset_index(inplace=True)
+    NaverFinanceSI_dataset['Date'] = pd.to_datetime(NaverFinanceSI_dataset['Date'])
+    
+    NaverFinanceF = pd.merge(stock_dataset,NaverFinanceSI_dataset,how='left',left_on='Date', right_on='Date').drop(columns=['negative','positive','logit'])
+    NaverFinanceF = NaverFinanceF.fillna(0) # 10일데이터 데이터셋 : NaverFinanceF
+    
+    NaverFinanceF = NaverFinanceF.drop(columns='intensity')
+    
+    #예측==========================================================
+    NaverFinanceF.set_index('Date',append=True,inplace=True)
     scaler = MinMaxScaler()
-    scaled_x = scaler.fit_transform(x)
-    scaled_y = scaler.fit_transform(np.array(y).reshape(1,-1))
-    print(scaled_x)
-    print(scaled_y)
-    # test_x = [[[0.7533039647577096, 0.1611144407042807, 0.5660338736224322, 0.31171768264244265, 0.4213458792502074, 0.47218813042402275, 0.5711026644849282, 0.442987034962536, 0.5167892347841567, 0.45740580996967406, 0.32784351496479136], [0.7268722466960353, 0.23860102381424045, 0.7347177477410248, 0.4452055891820311, 0.42610506791575675, 0.4708282123719916, 0.6236629341607127, 0.4911467699323917, 0.5765498640488582, 0.4947308234473864, 0.37597375644177333], [0.8105726872246697, 0.06463541626025635, 0.5106608534345883, 0.4582649291016724, 0.4324890127515295, 0.47896123201751584, 0.6720843143081456, 0.5011216655286779, 0.5970908039058291, 0.5181283926919029, 0.4020338903780436], [0.748898678414097, 0.41169822424587654, 0.1890694915125477, 0.30504478911191774, 0.41298273474664393, 0.45981845134932176, 0.6508199525013056, 0.4714940013664659, 0.5715398496583148, 0.5100957663573515, 0.3296236805874253], [0.5814977973568283, 0.4038412793424069, 0.32384104994976787, 0.2914059450053857, 0.40334983930385393, 0.4562619117767457, 0.653138311246483, 0.47639857145932574, 0.5794938932336087, 0.5242076211213957, 0.314702735725791], [0.5726872246696035, 0.26214844928917735, 0.614011939620793, 0.29769617914087443, 0.38577695509495413, 0.4251679593684301, 0.6169362104560099, 0.4295289850601147, 0.5341811476343881, 0.5687178730079276, 0.3364841875107789], [0.537444933920705, 0.10442230663531005, 0.5783153635389787, 0.33705744446146624, 0.3512378530608724, 0.37731108484432374, 0.53728326763125, 0.3712124105964527, 0.45998064106711656, 0.5980102601510886, 0.3138879226431808], [0.5594713656387666, 0.13279002091980172, 0.5547734202204269, 0.3093904197519128, 0.32016528581721104, 0.34475266665805915, 0.5182076067766603, 0.3711636692756204, 0.4523873438360515, 0.6293293576797243, 0.3316932327398474], [0.5682819383259914, 0.15834485126451406, 0.4608489927705599, 0.3036207524488642, 0.3340196949323446, 0.3701718282331541, 0.5255942305916346, 0.3802144158574343, 0.46226003225193235, 0.613559164070737, 0.3513057470995573], [0.5550660792951545, 0.12050797537549798, 0.8513526861856813, 0.38556643653628286, 0.36812418918899104, 0.4073850967522672, 0.5655428609165707, 0.41764578876943004, 0.5101064120577665, 0.6169491579256352, 0.33869331750963916]]]
-    test_y = [[0.6486486486486487]]
+    scaled_x = scaler.fit_transform(NaverFinanceF.drop(columns=['Close','High','Low']))
+    scaled_y = scaler.fit_transform(NaverFinanceF[['Close']])
+    
+    #list type로 변경
+    x = scaled_x.tolist() 
+    y = scaled_y.tolist()
 
     models_folder = settings.BASE_DIR / 'stock' / 'static' / 'dlmodel' #피클된 모델 파일이 들어있는 폴더를 찾을수있도록 BASE_DIR로 경로 설정
     file_path = os.path.join(models_folder, os.path.basename('kia_model.pickle')) #입력받은 경로의 기본 파일 이름 반환받음
     model = pickle.load(open(file_path, "rb"))
-    # print(file_path)
-    # 새로운 데이터로 주가예측
-    pred = model.predict(np.array(scaled_x).reshape(-1,10,11))
     
-    # 스케일러 정규화 원복
-    # scaler.inverse_transform(np.array(pred[-1]).reshape(1,-1))[0][0]
-    print('예측값: ', pred)
-    print('실제값: ', test_y)
-    print(np.array(pred[0]))
-    print('원복 예측값: ', scaler.inverse_transform(np.array(pred[0]).reshape(1,-1))[0][0])
-    print('원복 실제값: ', scaler.inverse_transform(np.array(test_y[0]).reshape(1,-1))[0][0])
+    pred_y = model.predict(np.array(x).reshape(-1,10,11))
+    result=int(scaler.inverse_transform(pred_y.reshape(1,-1))[0][0])
     
+    # url= cloudShow(file_path)
+    return render(request, 'show.html', {'result':result})
+    
+    
+# 10일치 주가 및 보조 데이터 추출
+def getStockData(stockName):
+    start_date= datetime.today() - timedelta(20)
+    end_date= datetime.today()
+    df = fdr.DataReader(stockName, start_date.strftime("%Y-%m-%d"),end_date.strftime("%Y-%m-%d"))
+    df_ten = df.tail(10)
+    df_ten.reset_index(inplace=True)
+    #FinanceDataReader를 이용해 보조 데이터 가져오기
+    df_dict = {
+        'KS11' : fdr.DataReader('KS11', start_date, end_date), #코스피지수
+        'KQ11' : fdr.DataReader('KQ11',start_date, end_date), #코스닥지수
+        'DAU' : fdr.DataReader('DJI', start_date, end_date), #다우지수
+        'NASDAQ' : fdr.DataReader('IXIC', start_date, end_date), #나스닥지수
+        'SP500':  fdr.DataReader('US500', start_date, end_date), #S&P 500
+        'USD' : fdr.DataReader('USD/KRW', start_date, end_date), #달러당 원화 환율
+        'JPY' : fdr.DataReader('JPY/KRW', start_date, end_date) #엔화 원화 환율
+    }
 
-    result= int(scaler.inverse_transform(np.array(pred[0]).reshape(1,-1))[0][0])
-    url= cloudShow(file_path)
-    return render(request, 'show.html', {'result':result,'url':url})
+    #각 보조데이터의 수정주가를 추출해서 stock_data에 추가하기
+    for key in df_dict:
+      #df_dict[key] 인덱스 해제
+      extra_df = df_dict[key].rename_axis('Date').reset_index()
+      
+      #사용할 칼럼명 생성
+      newName= key+'_Adj_Close'
 
-def cloudShow(file_path):
-    if "kia_model" in str(file_path):
-        url = "KIA_wcloud"
-    return url
+      #Date와 Adj Close컬럼만 추출
+      extra_df_cut=extra_df.loc[:,['Date','Adj Close']]
+      
+      #Adj Close컬럼명을 newName으로 변경
+      extra_df_cut.rename(columns={'Adj Close':newName},inplace=True)
+
+      #stock_data의 Date를 기준으로 extra_df_cut과 merge
+      merge_outer = pd.merge(df_ten,extra_df_cut, how='left',left_on='Date', right_on='Date')
+      
+      #stock_data에 merge_outer의 newName(key+'_Adj_Close')칼럼 데이터 추가
+      df_ten[newName] = merge_outer[newName]
+    return df_ten
+
+def financialNews(url):
+    #컬럼스 : 종목명, 뉴스 제목 , 언론사, 작성날짜, 시간, 본문 내용
+    stocklist=[]
+    titlelist=[]
+    companylist=[]
+    datelist=[]
+    totalsa_list=[] # 뉴스(제목) sa(sentiment analysis)
+    # timelist=[]
+    # contentlist=[]
+    negative_list=[]
+    positive_list=[]
+
+    #header에 User Agent 정보(네이버의 경우 네이버 검색로봇 Yeti)를 기입하여 웹 서버로 페이지를 요청할 시에 같이 보내서 크롤링 제한을 피한다
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; Yeti/1.1; +http://naver.me/spd)'}
+
+    # 감성수치 사전학습 모델 로드
+    tokenizer = AutoTokenizer.from_pretrained("snunlp/KR-FinBert-SC")
+    model = AutoModelForSequenceClassification.from_pretrained("snunlp/KR-FinBert-SC")
+    sa = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer) # 감성분류 모델 객체 sa 생성
+
+    #i는 페이지 번호 | 1~200 반복
+    for i in range(1,201) :
+        #본문으로 들어가는 링크를 담을 리스트
+        # links=[] 
+        res = requests.get(url+str(i), headers = headers)
+        soup = BeautifulSoup(res.text, 'html.parser') 
+        body = soup.find(class_='newsSchResult')
+        title = body.find_all(['dt','dd'], {'class': 'articleSubject'})  #뉴스제목
+        
+        #다음 페이지로 넘어갔을 때, 읽어올 title이 없을 경우 for문 종료
+        if title == [] : break
+
+        summary = body.find_all('dd', {'class': 'articleSummary'}) #요약문,언론사,날짜,시간
+        stock = soup.select('p.resultCount > strong')[0].text  #종목명
+
+        #한 페이지의 20개의 제목 가져오기
+        for item in title:
+          information = item.text 
+          
+          #link 추출 및 리스트에 저장
+          # href = item.find('a').attrs['href']
+          # links.append('https://finance.naver.com'+href)
+
+          #제목 리스트에 저장
+          titlelist.append(information.strip())
+          #제목 가져올때마다 종목명 리스트안에 추가
+          stocklist.append(stock) 
+          
+          # print('제목 : ',information)
+
+        #한 페이지의 20개의 언론사 , 작성날짜, 시간 가져오기
+        for item in summary:
+          # information = item.string # 요약본, 언론사, 날짜, 시간
+          press =  re.sub(r"\s", "", item.find('span', {'class': 'press'}).text) #언론사 -> 공백 제거완료
+          wdate_all =  re.sub(r"\s", "", item.find('span', {'class': 'wdate'}).text) #날짜,시간 -> 공백 제거완료
+          wdate=wdate_all[:10] #날짜만
+          # time=wdate_all[10:] #시간만
+
+          #언론사 리스트에 저장
+          companylist.append(press)
+          #작성날짜 리스트에 저장
+          datelist.append(wdate) 
+          #작성시간 리스트에 저장
+          # timelist.append(time)
+
+        #본문 추출
+        '''
+        for link in links:
+          print('link : ',link)
+          res = requests.get(link, headers = headers)
+          soup = BeautifulSoup(res.text, 'html.parser')
+          try:
+              # link_news 내용이 있을 경우
+              if soup.find('div',{'class': 'link_news'}) != None:
+                  # link_news 제거
+                  soup.find('div',{'class': 'link_news'}).decompose()
+              #본문 내용 추출
+              content = soup.find('div',{'id':'content'}).text.strip()
+          except AttributeError as e:
+              #본문이 없을 경우, NaN로 채우기
+              print('error : ',e)
+
+          print(content)
+          print("-------다음뉴스------")
+          #본문내용을 리스트에 저장
+          contentlist.append(content)
+        '''  
+
+        #totalsa_list = [] # 뉴스(제목+내용) sa(sentiment analysis) 배열 초기화
+    for news in titlelist:
+        inputs = tokenizer(news, return_tensors='pt')
+        output = model(**inputs)
+        output = output.logits.tolist()[0]
+        totalsa_list.append(output)
+           
+    outputs = torch.tensor(totalsa_list) # 출력값을 텐서로 변환 # outputs
+    predictions = nn.functional.softmax(outputs, dim=-1) # 출력값을 확률 형태로 변환 # predictions
+    sa = predictions.detach().numpy()
+    # detach()는 tensor에서 이루어진 모든 연산을 분리한 tensor을 반환하는 method
+    #print(predictions.detach().numpy())
+    negative_list = sa[:, 0]
+    positive_list = sa[:, 2]
+    #print(negative_list)
+    
+    # 데이터셋 만들기
+    NaverFinance = pd.DataFrame({
+        'stock' : stocklist,
+        'title' : titlelist,
+        'company' : companylist,
+        'Date' : datelist,
+        # 'time' : timelist,
+        # 'content' : contentlist
+        'negative' : negative_list,
+        'positive' : positive_list
+    })
+
+    NaverFinanceSI = NaverFinance.groupby(['Date']).mean()
+    NaverFinanceSI['logit'] = np.log(NaverFinanceSI['positive']/NaverFinanceSI['negative']) # logit = ln(P/N)
+    avgn = NaverFinance['title'].count()/NaverFinanceSI['logit'].count() # 전체 기간에 작성된 뉴스 수의 평균
+    NaverFinanceSI['intensity'] = np.log(1 + (NaverFinance.groupby(['Date'])['title'].count()/avgn))
+    NaverFinanceSI['sent_index'] = NaverFinanceSI['logit'] * NaverFinanceSI['intensity']
+
+    # #결과 출력
+    # print(NaverFinanceSI)
+    # # csv 파일로 저장      
+    # #NaverFinance.to_csv('NewFinance10.csv', mode='w', encoding='utf-8-sig') 
+    return NaverFinanceSI
+
+# def cloudShow(file_path):
+#     if "kia_model" in str(file_path):
+#         url = "KIA_wcloud"
+#     return url
 
 # def graphShow(file_path,stockName):
 #     if "kia_model" in str(file_path):
