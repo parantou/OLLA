@@ -5,14 +5,7 @@
 {%else%}
 <div class="result1">
   <canvas id="myChart" style="width: 700px; height:350px;"></canvas>
-  <span>
-  {%if result%}
-  	 {%if result < 1000 %}
-  		다음날 예측 종가는 {{result|intcomma}} 입니다.</span>
-  	 {%endif%}
-  {%else%}
-  	 존재하지 않는 종목입니다.
-  {%endif%}
+  <p>다음날 예측 종가는 <span style="color:#225088">{{result|intcomma}}</span> 입니다.</p>
 </div>
 <img src="/static/images/{{url}}.png"  width=500, height=400 >
 <script>

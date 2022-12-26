@@ -226,8 +226,7 @@ footer{
 }
 /* result */
 .result_box{
-	width: 100%;
-	margin-top : 40px;
+	margin: 40px auto 0px;
 	display: flex;
 	flex-direction: column;
 	align-content: center;
@@ -238,4 +237,17 @@ canvas{
 }
 .result1{
 	margin-bottom: 20px;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	align-items: center;
+}
+.result1 p{
+	margin-top:5px;
+	/* border: 1px solid #dcdcdc; */
+	width: 300px;
+	/* background-color: #dcdcdc; */
+	/* border-radius: 8px; */
+	text-align: center;
+	color : rgb(107, 118, 132)
 }

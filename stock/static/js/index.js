@@ -4,7 +4,7 @@ $('.search-btn').click(function(){
 		alert('종목명을 입력해주세요.')
 	}else{
 		clearTxt($('.result_box'))
-		extend()
+		extend() //추후 if문 추가 필요
 		fetchFunc(form)
 	}			
 });
@@ -16,7 +16,7 @@ $('.search-txt').keydown(function(e){
 			return
 		}else{
 			clearTxt($('.result_box'))
-			extend()
+			extend() //추후 if문 추가 필요
 			fetchFunc(form)
 		}
 	}
@@ -40,6 +40,7 @@ function fetchFunc(form){
     .then(function(res){
 		return res.text();
 	}).then(function(data){
+		//오류 났을때, 재검색 메시지 사라지는 현상 수정 필요
 		closeLoading()
 		$('.result_box').html(data);
 		$('.result_box').addClass('txt_fadein')

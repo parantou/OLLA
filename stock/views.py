@@ -352,6 +352,21 @@ def stockShow(request):
     pred_y = model.predict(np.array(x).reshape(-1,10,11))
     result=int(scaler.inverse_transform(pred_y.reshape(1,-1))[0][0])
     
+    print('result : ',result) #62582
+    if result >= 1000 and result < 5000 :
+        pass
+    elif result >= 5000 and result < 10000 :
+        pass
+    elif result >= 10000 and result < 50000 :
+        pass
+    elif result >= 50000 and result < 100000 :
+        pass
+    elif result >= 100000 and result < 500000 :
+        pass
+    elif result >= 500000:
+        pass
+        
+    
     url= cloudShow(file_path)
     
     #stock_close_df, pred은 dataframe type
