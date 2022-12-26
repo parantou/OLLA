@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
-from stock.models import Member, Comment, BoardTab
+from stock.models import Member, Comment
+from stock.models import BoardTab 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required
 import pickle
@@ -10,7 +11,9 @@ import numpy as np
 from django.conf import settings
 import os
 from sklearn.preprocessing import MinMaxScaler
-from _ast import If
+import FinanceDataReader as fdr
+import datetime as date
+import matplotlib.pyplot as plt
 # Create your views here.
 def mainFunc(request):
     return render(request,'main.html')
@@ -281,7 +284,7 @@ def commentDelete(request):
         return render(request, 'board/content.html', {'data_one':data, 'page':page,'comment_one':comment})
     except Exception as e:
         return render(request, 'board/error.html')
-    
+
 def stockShow(request):
 
     scaler = MinMaxScaler()
@@ -296,7 +299,7 @@ def stockShow(request):
     # print(file_path)
     # 새로운 데이터로 주가예측
     pred = model.predict(np.array(scaled_x).reshape(-1,10,11))
-    
+
     # 스케일러 정규화 원복
     # scaler.inverse_transform(np.array(pred[-1]).reshape(1,-1))[0][0]
     print('예측값: ', pred)
@@ -304,18 +307,57 @@ def stockShow(request):
     print(np.array(pred[0]))
     print('원복 예측값: ', scaler.inverse_transform(np.array(pred[0]).reshape(1,-1))[0][0])
     print('원복 실제값: ', scaler.inverse_transform(np.array(test_y[0]).reshape(1,-1))[0][0])
-    
+
 
     result= int(scaler.inverse_transform(np.array(pred[0]).reshape(1,-1))[0][0])
     url= cloudShow(file_path)
-    return render(request, 'show.html', {'result':result,'url':url})
+    stock_close_df, pred = graphShow(file_path, stockName, result)
+
+    return render(request, 'show.html', {'result':result,'url':url, 'stock_close_df': stock_close_df, 'pred':pred})
 
 def cloudShow(file_path):
     if "kia_model" in str(file_path):
         url = "KIA_wcloud"
     return url
 
-# def graphShow(file_path,stockName):
-#     if "kia_model" in str(file_path):
-#
-#     return url
+def graphShow(file_path, stockName, result):
+    if "kia_model" in str(file_path):
+        
+        start_date = date.datetime.today()  # 오늘 날짜
+        print(start_date)
+        print(start_date.weekday())
+        d_day = 100
+        target_date = start_date - date.timedelta(d_day)  # 100일전 날짜
+        
+        # 입력받은 주가로 100일전 ~ 오늘 날 까지의 주가 데이터 출력
+        df =fdr.DataReader(stockName, target_date.date(), start_date.date())
+        pred = result
+        stock_close_df = df[['Close']]
+        # kia_close.to_csv("kia_close.csv")
+        print(stock_close_df)
+        # 데이터 추가해서 원래 데이터프레임에 저장하기
+        if start_date.weekday() > 4:
+            start_date += date.timedelta(days=8 - start_date.isoweekday())
+            print(start_date)
+            dict_data = pd.DataFrame({'Close':pred}, index=[start_date])
+            stock_close_df = stock_close_df.append(dict_data)
+        else:
+            dict_data = pd.DataFrame({'Close':pred}, index=[start_date])
+            stock_close_df = stock_close_df.append(dict_data)
+        print('---------------------')
+        print(stock_close_df[-1:])
+        df['Close'].plot()
+        stock_close_df.plot()
+        print(stock_close_df[:-1])
+        pred = stock_close_df[-1:]
+        # plt.figure()
+        # plt.plot(stock_close_df, 'r--' ,label='predicted stock price')
+        # plt.plot(stock_close_df[:-1], color='blue', label='real stock price') 
+        # # plt.plot(stock_close_df[-1:], 'r--', label='predicted stock price')
+        # plt.title('Predicted Stock Price')
+        # plt.xlabel('date')
+        # plt.ylabel('stock price')
+        # plt.legend(loc='best')
+        # # plt.show()
+        # graph = plt.savefig('/static/images/prediction_graph.png')
+    return stock_close_df, pred
