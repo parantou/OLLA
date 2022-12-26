@@ -374,11 +374,9 @@ def stockShow(request):
     result_date = np.array(stock_close_df['Date']).tolist() #날짜
     pred_Close = np.array(stock_close_df['Close']).tolist() #종가+예측
     real_Close = np.array(stock_close_df['Close'][:-1]).tolist() #종가
-    print('pred_Close : ',pred_Close)
-    print('real_Close : ',real_Close)
     
     return render(request, 'show.html', {'result':result,'url':url, 'result_date': result_date, 'pred_Close': pred_Close,  'real_Close':real_Close})
-    
+
 # 10일치 주가 및 보조 데이터 추출
 def getStockData(stockName):
     start_date= datetime.today() - timedelta(20)
@@ -580,9 +578,9 @@ def graphShow(file_path, stockName, result):
             
             stock_close_df['Date'] = stock_close_df['Date'].dt.strftime("%Y-%m-%d")
         print('---------------------')
-        print(stock_close_df)
-        print(stock_close_df[-1:])
-        print(stock_close_df[:-1])
+        print(stock_close_df) #전체
+        print(stock_close_df[-1:]) #다음날
+        print(stock_close_df[:-1]) # 백일
         pred = stock_close_df[-1:]
 
     return stock_close_df, pred

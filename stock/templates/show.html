@@ -12,80 +12,74 @@
   const ctx = document.getElementById('myChart');
 
   new Chart(ctx, {
-	  type:'line',
-	  data:{
-		  labels: [
-			  {%if result_date%}
-				  {% for date in result_date %} 
-				  	"{{ date|slice:'5:' }}", 
-				  {% endfor %}
-		      {%endif%}
-		  ],
-		  datasets: [
-		    {
-		      label: '',
-		      data: [
-				  {%if real_Close%}
-			    	  {% for data in real_Close %}
-			             "{{ data}}",
-			      	  {% endfor %}
-			      {%endif%}
-		      ]
-		    },
-		    {
-		      label: '',
-		      data: [
-				  {%if pred_Close%}
-			    	  {% for data in pred_Close %}
-			             "{{ data}}",
-			      	  {% endfor %}
-			      {%endif%}
-		      ]
-		    }
-		  ]
-		},
-		options:{
-			responsive: false,
-	        plugins: {
-	         	  legend: {
-	         		//position : 'top', //label 위치
-	             	display: false //label 안 보이도록
-	            },
-	            title: {
-	              display: true,
-	              text: (ctx) => '100일 종가', //title 생성
-	            }
+     type:'line',
+     data:{
+        labels: [
+           {% for date in result_date %} 
+              "{{ date|slice:'5:' }}", 
+           {% endfor %}
+        ],
+        datasets: [
+          {
+            label: '',
+            data: [
+               {% for data in real_Close %}
+                   "{{ data}}",
+                 {% endfor %}
+            ]
+          },
+          {
+            label: '',
+            data: [
+               {% for data in pred_Close %}
+                   "{{ data}}",
+                 {% endfor %}
+            ]
+          }
+        ]
+      },
+      options:{
+         responsive: false,
+           plugins: {
+                 legend: {
+                  //position : 'top', //label 위치
+                   display: false //label 안 보이도록
+               },
+               title: {
+                 display: true,
+                 text: (ctx) => '100일 종가', //title 생성
+               }
            },
- /*           layout: {
-	           	padding: {
-	           		top : 40 //레이아웃 수정
-	           	}
-           }, */
+           layout: {
+                 padding: {
+                    top : 40 //레이아웃 수정
+                 }
+           },
            scales: {
-        	   x: {
-        		   title: {
-						display: true,
-       	        	  	text: 'Day'
-       	           },
-       	           ticks: {
-       	        	   font:{
-       	        		   size: 10
-       	        	   }       	           		
-       	           }
-       	       },
-       	       y: {
-       	           title: {
-       	           	   display: true,
-       	           	   text: 'Close'
-       	           },
-       	           ticks: {
-       	        	   font:{
-       	        		   size: 10
-       	        	   }
-       	           }
-       	       }
-       	  }
-	   }
+              x: {
+                 title: {
+                  display: true,
+                          text: 'Day'
+                     },
+                     ticks: {
+                        font:{
+                           size: 10
+                        }                           
+                     }
+                 },
+                 y: {
+                     title: {
+                           display: true,
+                           text: 'Close'
+                     },
+                     ticks: {
+                        font:{
+                           size: 10
+                        }
+                     }
+                 }
+            }
+      }
   });
 </script>
 {%endif%}
