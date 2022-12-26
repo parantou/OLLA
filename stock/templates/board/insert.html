@@ -6,6 +6,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
 <link rel="stylesheet" href="/static/css/header.css">
+<link rel="stylesheet" href="/static/css/sub.css">
 <script type="text/javascript">
 window.onload = function(){
 	document.querySelector("#btnOk").onclick = chkFunc;
@@ -27,7 +28,6 @@ function chkFunc(){
 </script>
 </head>
 <style>
-/*인덱스*/
 botton{border-radius:0 !important;}
 .btn{border-radius:0 !important;}
 .darkBtn{border-radius:0 !important;}
@@ -50,7 +50,7 @@ h3{font-size:24px; margin-top:50px}
   <tr>
   	<td>작성자</td>
   	<td><input type="text" name="bt_id" value="{{ request.session.m_id }}" disabled/></td>
-  	<td style="display:none;"><input type="hidden" name="bt_id" value="{{ request.session.m_id }}"/></td>
+  	<td style="display:none !important;"><input type="hidden" name="bt_id" value="{{ request.session.m_id }}"/></td>
   </tr>
   <tr>
   	<td>비밀번호</td>
