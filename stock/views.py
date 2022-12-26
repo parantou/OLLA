@@ -528,11 +528,11 @@ def cloudShow(file_path):
 def graphShow(file_path, stockName, result):
     if "kia_model" in str(file_path):
         
-        start_date = date.datetime.today()  # 오늘 날짜
+        start_date = datetime.today()  # 오늘 날짜
         print(start_date)
         print(start_date.weekday())
         d_day = 100
-        target_date = start_date - date.timedelta(d_day)  # 100일전 날짜
+        target_date = start_date - timedelta(d_day)  # 100일전 날짜
         
         # 입력받은 주가로 100일전 ~ 오늘 날 까지의 주가 데이터 출력
         df =fdr.DataReader(stockName, target_date.date(), start_date.date())
