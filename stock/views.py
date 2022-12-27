@@ -22,6 +22,11 @@ import re
 import FinanceDataReader as fdr
 import torch
 import torch.nn as nn
+from konlpy.tag import Okt
+from collections import Counter
+from PIL import Image
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 # Create your views here.
 def mainFunc(request):
@@ -299,6 +304,9 @@ def commentDelete(request):
 1. conda install pytorch torchvision torchaudio cpuonly -c pytorch
 2. pip install -U finance-datareader
 3. pip install transformers
+4. pip install wordcloud
+5. pip uninstall pillow
+6. pip install pillow
 '''
 def stockShow(request):
     #입력값 가져오기
@@ -314,7 +322,7 @@ def stockShow(request):
         return render(request, 'show.html', {'NotFound':'존재하지 않는 종목입니다. 다시 검색해주세요.'})
     
     # 10일치 주가 데이터
-    stock_dataset=getStockData(stockName)   
+    stock_dataset =getStockData(stockName)   
     
     #이전 행의 값으로 결측치 채우기
     stock_dataset.fillna(method= 'ffill',inplace=True)
@@ -325,8 +333,8 @@ def stockShow(request):
     start_date=stock_dataset.head(1)['Date'][0].strftime("%Y-%m-%d")
     end_date=stock_dataset.tail(1)['Date'][9].strftime("%Y-%m-%d")
 
-    financialNews(url +"&stDateStart="+start_date+"&stDateEnd="+end_date+"&page=")
-    NaverFinanceSI_dataset = financialNews(url +"&stDateStart="+start_date+"&stDateEnd="+end_date+"&page=")
+    # financialNews(url +"&stDateStart="+start_date+"&stDateEnd="+end_date+"&page=")
+    NaverFinanceSI_dataset, NaverFinance = financialNews(url +"&stDateStart="+start_date+"&stDateEnd="+end_date+"&page=")
     
     NaverFinanceSI_dataset.reset_index(inplace=True)
     NaverFinanceSI_dataset['Date'] = pd.to_datetime(NaverFinanceSI_dataset['Date'])
@@ -365,9 +373,8 @@ def stockShow(request):
         pass
     elif result >= 500000:
         pass
-        
     
-    url= cloudShow(file_path)
+    url = cloudShow(NaverFinance, stockName)
     
     #stock_close_df, pred은 dataframe type
     stock_close_df, pred = graphShow(file_path, stockName, result)
@@ -375,7 +382,7 @@ def stockShow(request):
     pred_Close = np.array(stock_close_df['Close']).tolist() #종가+예측
     real_Close = np.array(stock_close_df['Close'][:-1]).tolist() #종가
     
-    return render(request, 'show.html', {'result':result,'url':url, 'result_date': result_date, 'pred_Close': pred_Close,  'real_Close':real_Close})
+    return render(request, 'show.html', {'result':result,'url':url, 'result_date': result_date, 'pred_Close': pred_Close, 'real_Close':real_Close})
 
 # 10일치 주가 및 보조 데이터 추출
 def getStockData(stockName):
@@ -538,23 +545,56 @@ def financialNews(url):
     NaverFinanceSI['intensity'] = np.log(1 + (NaverFinance.groupby(['Date'])['title'].count()/avgn))
     NaverFinanceSI['sent_index'] = NaverFinanceSI['logit'] * NaverFinanceSI['intensity']
 
-    # #결과 출력
-    # print(NaverFinanceSI)
-    # # csv 파일로 저장      
-    # #NaverFinance.to_csv('NewFinance10.csv', mode='w', encoding='utf-8-sig') 
-    return NaverFinanceSI
+    return NaverFinanceSI, NaverFinance
 
-def cloudShow(file_path):
-    if "kia_model" in str(file_path):
-        url = "KIA_wcloud"
+def cloudShow(NaverFinance, stockName):
+    okt = Okt()
+    data = NaverFinance
+    title = data['title'].to_string()
+    words = okt.nouns(title) #명사추출
+
+    #불용어 제거
+    if stockName == '373220' : #엘지
+        stopwords = ['에너지', '솔루션','특징','포토']
+    elif stockName == '000270' : #기아
+        stopwords = ['기아', '현대차','현대','기아차']
+    elif stockName == '000660' : #sk
+        stopwords = ['하이닉스', '목표','특징','포토']
+    elif stockName == '005930' : #삼성
+        stopwords = ['전자','삼성','부회장','특징','포토']
+    elif stockName == '005380' : #현대
+        stopwords = ['현대차','기아','특징','포토']
+    elif stockName == '035720': #카카오
+        stopwords = ['카카오','페이','대표', '특징','포토']
+    else:stopwords = ['대표', '특징','포토']
+
+    #명사가 한글자거나 불용어에 포함되지 않은것만 추출
+    result =  [x for x in words if x not in stopwords and len(x) > 1]
+    
+    #빈도수 카운트
+    count_list = Counter(result)
+    
+    img_folder = settings.BASE_DIR / 'stock' / 'static' / 'images'
+    file_path = os.path.join(img_folder, os.path.basename('shape.png'))
+    img=Image.open(file_path) #이미지 파일 읽어오기
+    # img = cv2.imread("/static/images/shape.png")
+    imgArray=np.array(img) #픽셀 값을 배열 형태 변환
+    
+    path = './font/HYNAMB.TTF'
+    my_wc = WordCloud(font_path = path, relative_scaling=0.2, colormap='Wistia_r',
+                      background_color='white',mask=imgArray).generate_from_frequencies(count_list)
+    
+    file_path = os.path.join(img_folder, os.path.basename('wcloud.png'))
+    my_wc.to_file(file_path)
+    url= os.path.basename(file_path) #절대경로에서 파일명만 추출
     return url
 
 def graphShow(file_path, stockName, result):
     if "kia_model" in str(file_path):
         
         start_date = datetime.today()  # 오늘 날짜
-        print(start_date)
-        print(start_date.weekday())
+        # print(start_date)
+        # print(start_date.weekday())
         d_day = 100
         
         target_date = (start_date - timedelta(d_day)).strftime("%Y-%m-%d")  # 100일전 날짜
@@ -567,20 +607,20 @@ def graphShow(file_path, stockName, result):
         # 데이터 추가해서 원래 데이터프레임에 저장하기
         if start_date.weekday() > 4:
             start_date += date.timedelta(days=8 - start_date.isoweekday())
-            print(start_date)
+            # print(start_date)
             dict_data = pd.DataFrame({'Date':[start_date],'Close':[pred]})
             stock_close_df = stock_close_df.append(dict_data)
         else:
             start_date += timedelta(days=1)
-            print('start_date', start_date)
+            # print('start_date', start_date)
             dict_data = pd.DataFrame({'Date':[start_date],'Close':[pred]})
             stock_close_df = stock_close_df.append(dict_data)
             
             stock_close_df['Date'] = stock_close_df['Date'].dt.strftime("%Y-%m-%d")
-        print('---------------------')
-        print(stock_close_df) #전체
-        print(stock_close_df[-1:]) #다음날
-        print(stock_close_df[:-1]) # 백일
+        # print('---------------------')
+        # print(stock_close_df) #전체
+        # print(stock_close_df[-1:]) #다음날
+        # print(stock_close_df[:-1]) # 백일
         pred = stock_close_df[-1:]
 
     return stock_close_df, pred
