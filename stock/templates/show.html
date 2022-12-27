@@ -1,6 +1,11 @@
-<div>
+{% load humanize %}
+
+{%if NotFound%}
+<span>{{NotFound}}</span>
+{%else%}
+<div class="result1">
   <canvas id="myChart" style="width: 700px; height:350px;"></canvas>
-  <p>다음날 예측 종가는 {{result}} 입니다.</p>
+  <p>다음날 예측 종가는 <span style="color:#225088">{{result|intcomma}}</span> 입니다.</p>
 </div>
 <img src="/static/images/{{url}}.png"  width=500, height=400 >
 <script>
@@ -77,3 +82,4 @@
       }
   });
 </script>
+{%endif%}
