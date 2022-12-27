@@ -245,7 +245,7 @@ canvas{
 .result1 p{
 	/* margin-top:10px; */
 	/* border: 1px solid #dcdcdc; */
-	width: 350px;
+	width: 400px;
 	/* background-color: #dcdcdc; */
 	/* border-radius: 8px; */
 	text-align: center;
@@ -265,7 +265,7 @@ canvas{
 	border-radius:5px;
 	padding:5px;
 	padding-bottom:8px;
-	width:210px;
+	width:228px;
 	font-size: 16px;
 }
 .h3title span{

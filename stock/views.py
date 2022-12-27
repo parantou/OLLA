@@ -26,6 +26,7 @@ from konlpy.tag import Okt
 from collections import Counter
 from PIL import Image
 from wordcloud import WordCloud
+import seaborn as sns
 
 # Create your views here.
 def mainFunc(request):
@@ -379,7 +380,8 @@ def stockShow(request):
     elif result >= 500000:
         pass
     
-    url = cloudShow(NaverFinance, stockName)
+    # url = cloudShow(NaverFinance, stockName)
+    url = cloudShow(file_path)
     
     #stock_close_df, pred은 dataframe type
     stock_close_df, pred = graphShow(file_path, stockName, result)
@@ -554,47 +556,52 @@ def financialNews(url):
 
     return NaverFinanceSI, NaverFinance
 
-def cloudShow(NaverFinance, stockName):
-    okt = Okt()
-    data = NaverFinance
-    title = data['title'].to_string()
-    words = okt.nouns(title) #명사추출
-
-    #불용어 제거
-    if stockName == '373220' : #엘지
-        stopwords = ['에너지', '솔루션','특징','포토']
-    elif stockName == '000270' : #기아
-        stopwords = ['기아', '현대차','현대','기아차']
-    elif stockName == '000660' : #sk
-        stopwords = ['하이닉스', '목표','특징','포토']
-    elif stockName == '005930' : #삼성
-        stopwords = ['전자','삼성','부회장','특징','포토']
-    elif stockName == '005380' : #현대
-        stopwords = ['현대차','기아','특징','포토']
-    elif stockName == '035720': #카카오
-        stopwords = ['카카오','페이','대표', '특징','포토']
-    else:stopwords = ['대표', '특징','포토']
-
-    #명사가 한글자거나 불용어에 포함되지 않은것만 추출
-    result =  [x for x in words if x not in stopwords and len(x) > 1]
-    
-    #빈도수 카운트
-    count_list = Counter(result)
-    
-    img_folder = settings.BASE_DIR / 'stock' / 'static' / 'images'
-    file_path = os.path.join(img_folder, os.path.basename('shape.png'))
-    img=Image.open(file_path) #이미지 파일 읽어오기
-    # img = cv2.imread("/static/images/shape.png")
-    imgArray=np.array(img) #픽셀 값을 배열 형태 변환
-    
-    path = './font/HYNAMB.TTF'
-    my_wc = WordCloud(font_path = path, relative_scaling=0.2, colormap='Wistia_r',
-                      background_color='white',mask=imgArray).generate_from_frequencies(count_list)
-    
-    file_path = os.path.join(img_folder, os.path.basename('wcloud.png'))
-    my_wc.to_file(file_path)
-    url= os.path.basename(file_path) #절대경로에서 파일명만 추출
-    return url
+def cloudShow(file_path):
+    if "kia_model" in str(file_path):
+        url = "KIA_wcloud"
+        
+# def cloudShow(NaverFinance, stockName):
+#     okt = Okt()
+#     data = NaverFinance
+#     title = data['title'].to_string()
+#     words = okt.nouns(title) #명사추출
+#
+#     #불용어 제거
+#     if stockName == '373220' : #엘지
+#         stopwords = ['에너지', '솔루션','특징','포토']
+#     elif stockName == '000270' : #기아
+#         stopwords = ['기아', '현대차','현대','기아차']
+#     elif stockName == '000660' : #sk
+#         stopwords = ['하이닉스', '목표','특징','포토']
+#     elif stockName == '005930' : #삼성
+#         stopwords = ['전자','삼성','부회장','특징','포토']
+#     elif stockName == '005380' : #현대
+#         stopwords = ['현대차','기아','특징','포토']
+#     elif stockName == '035720': #카카오
+#         stopwords = ['카카오','페이','대표', '특징','포토']
+#     else:stopwords = ['대표', '특징','포토']
+#
+#     #명사가 한글자거나 불용어에 포함되지 않은것만 추출
+#     result =  [x for x in words if x not in stopwords and len(x) > 1]
+#
+#     #빈도수 카운트
+#     count_list = Counter(result)
+#
+#     img_folder = settings.BASE_DIR / 'stock' / 'static' / 'images'
+#     file_path = os.path.join(img_folder, os.path.basename('shape.png'))
+#     img=Image.open(file_path) #이미지 파일 읽어오기
+#     imgArray=np.array(img) #픽셀 값을 배열 형태 변환
+#
+#     font_folder = settings.BASE_DIR / 'stock' / 'static' / 'font'
+#     file_path = os.path.join(img_folder, os.path.basename('HYNAMB.TTF'))
+#
+#     my_wc = WordCloud(font_path = file_path, width=700, height=350, relative_scaling=0.2, colormap='PuBu_r',
+#                       background_color='white').generate_from_frequencies(count_list) #mask=imgArray
+#
+#     file_path = os.path.join(img_folder, os.path.basename('wcloud.png'))
+#     my_wc.to_file(file_path)
+#     url= os.path.basename(file_path) #절대경로에서 파일명만 추출
+#     return url
 
 def graphShow(file_path, stockName, result):
     if "kia_model" in str(file_path):
