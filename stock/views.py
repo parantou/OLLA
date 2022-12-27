@@ -587,8 +587,8 @@ def cloudShow(NaverFinance, stockName):
     font_folder = settings.BASE_DIR / 'stock' / 'static' / 'font'
     file_path = os.path.join(img_folder, os.path.basename('HYNAMB.TTF'))
     
-    my_wc = WordCloud(font_path = file_path, relative_scaling=0.2, colormap='BuPu_r',
-                      background_color='white',mask=imgArray).generate_from_frequencies(count_list)
+    my_wc = WordCloud(font_path = file_path, width=700, height=350, relative_scaling=0.2, colormap='PuBu_r',
+                      background_color='white').generate_from_frequencies(count_list) #mask=imgArray
     
     file_path = os.path.join(img_folder, os.path.basename('wcloud.png'))
     my_wc.to_file(file_path)
