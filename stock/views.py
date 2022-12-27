@@ -26,6 +26,7 @@ from konlpy.tag import Okt
 from collections import Counter
 from PIL import Image
 from wordcloud import WordCloud
+import seaborn as sns
 
 # Create your views here.
 def mainFunc(request):
@@ -581,11 +582,12 @@ def cloudShow(NaverFinance, stockName):
     img_folder = settings.BASE_DIR / 'stock' / 'static' / 'images'
     file_path = os.path.join(img_folder, os.path.basename('shape.png'))
     img=Image.open(file_path) #이미지 파일 읽어오기
-    # img = cv2.imread("/static/images/shape.png")
     imgArray=np.array(img) #픽셀 값을 배열 형태 변환
     
-    path = './font/HYNAMB.TTF'
-    my_wc = WordCloud(font_path = path, relative_scaling=0.2, colormap='Wistia_r',
+    font_folder = settings.BASE_DIR / 'stock' / 'static' / 'font'
+    file_path = os.path.join(img_folder, os.path.basename('HYNAMB.TTF'))
+    
+    my_wc = WordCloud(font_path = file_path, relative_scaling=0.2, colormap='BuPu_r',
                       background_color='white',mask=imgArray).generate_from_frequencies(count_list)
     
     file_path = os.path.join(img_folder, os.path.basename('wcloud.png'))
