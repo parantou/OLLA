@@ -24,6 +24,7 @@ $('.search-txt').keydown(function(e){
 function extend(){
 	$('.index_txt').slideUp(1000)
 	$('.search-txt').addClass('input_expend');
+	//$('#warning').css({'visibility':'visible'})
 	$('#img_box').addClass('txt_fadeout')
 	setTimeout(function(){
 		$('#img_box').css({'display':'none'})
