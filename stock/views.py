@@ -306,6 +306,9 @@ def commentDelete(request):
 4. pip install wordcloud
 5. pip uninstall pillow
 6. pip install pillow
+
+setting.py 수정
+1. INSTALLED_APPS에 'django.contrib.humanize', 추가
 '''
 def stockShow(request):
     #입력값 가져오기
