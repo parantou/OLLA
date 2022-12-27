@@ -4,12 +4,21 @@
 <span>{{NotFound}}</span>
 {%else%}
 <div class="result1">
-  <canvas id="myChart" style="width: 700px; height:350px;"></canvas>
-  <p>다음날 예측 종가는 <span style="color:#225088">{{result|intcomma}}</span> 입니다.</p>
+  <p>다음날 예측 종가는 <span style="color:#225088 ">{{result|intcomma}}</span> 입니다. <br />
+    <span id="warning" style="font-size:10px;">투자에 참고로만 활용하시기 바라며,투자에 따른 손실은 투자자 본인에게 귀속됩니다.</span>
+  </p>
+  <canvas id="close_Chart" style="width: 700px; height:350px;"></canvas>
+</div>
+<div class="result2">
+	<h3 class="h3title">
+		<span>감성 그래프 및 워드클라우드</span>
+	</h3>
+	  <canvas id="sent_Chart" style="width: 700px; height:350px;"></canvas>
 </div>
 <img src="/static/images/{{url}}.png"  width=500, height=400 >
 <script>
-  const ctx = document.getElementById('myChart');
+  const ctx = document.getElementById('close_Chart');
+  const ctx2 = document.getElementById('sent_Chart');
 
   new Chart(ctx, {
      type:'line',
@@ -52,7 +61,7 @@
            },
            layout: {
                  padding: {
-                    top : 40 //레이아웃 수정
+                    top : 10 //레이아웃 수정
                  }
            },
            scales: {
@@ -81,5 +90,68 @@
             }
       }
   });
+  new Chart(ctx2, {
+     type:'line',
+     data:{
+        labels: [
+           {% for date in intensity_date %} 
+              "{{ date|slice:'5:' }}", 
+           {% endfor %}
+        ],
+        datasets: [
+          {
+            label: '',
+            fill : true,
+            data: [
+               {% for data in intensity_df %}
+                   "{{ data}}",
+               {% endfor %}
+            ]
+          }
+        ]
+      },
+      options:{
+         responsive: false,
+         plugins: {
+               legend: {
+                //position : 'top', //label 위치
+                 display: false //label 안 보이도록
+             },
+             title: {
+               display: true,
+               text: (ctx) => '감성지수', //title 생성
+             }
+         },
+         layout: {
+               padding: {
+                  top : 10 //레이아웃 수정
+               }
+         },
+         scales: {
+            x: {
+               title: {
+                display: true,
+                        text: 'Day'
+                   },
+                   ticks: {
+                      font:{
+                         size: 10
+                      }                           
+                   }
+               },
+               y: {
+                   title: {
+                         display: true,
+                         text: 'sent'
+                   },
+                   ticks: {
+                      font:{
+                         size: 10
+                      }
+                   }
+               }
+          }
+      }
+  })
 </script>
 {%endif%}

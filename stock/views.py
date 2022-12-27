@@ -333,6 +333,8 @@ def stockShow(request):
     
     NaverFinanceF = pd.merge(stock_dataset,NaverFinanceSI_dataset,how='left',left_on='Date', right_on='Date').drop(columns=['negative','positive','logit'])
     NaverFinanceF = NaverFinanceF.fillna(0) # 10일데이터 데이터셋 : NaverFinanceF
+    intensity_date = np.array(NaverFinanceF['Date'].astype(str)).tolist() #감성지수 날짜
+    intensity_df = np.array(NaverFinanceF['sent_index']).tolist() #감성지수
     
     NaverFinanceF = NaverFinanceF.drop(columns='intensity')
     
@@ -352,6 +354,7 @@ def stockShow(request):
     pred_y = model.predict(np.array(x).reshape(-1,10,11))
     result=int(scaler.inverse_transform(pred_y.reshape(1,-1))[0][0])
     
+    #작업필요
     print('result : ',result) #62582
     if result >= 1000 and result < 5000 :
         pass
@@ -375,7 +378,9 @@ def stockShow(request):
     pred_Close = np.array(stock_close_df['Close']).tolist() #종가+예측
     real_Close = np.array(stock_close_df['Close'][:-1]).tolist() #종가
     
-    return render(request, 'show.html', {'result':result,'url':url, 'result_date': result_date, 'pred_Close': pred_Close,  'real_Close':real_Close})
+    return render(request, 'show.html', {'result':result,'url':url, 'result_date': result_date, 
+                                         'pred_Close': pred_Close,  'real_Close':real_Close,
+                                         'intensity_df':intensity_df, 'intensity_date':intensity_date})
 
 # 10일치 주가 및 보조 데이터 추출
 def getStockData(stockName):

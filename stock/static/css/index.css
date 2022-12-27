@@ -236,18 +236,39 @@ canvas{
 	box-shadow:2px 2px 2px 2px #eee;
 }
 .result1{
-	margin-bottom: 20px;
+	margin-bottom: 40px;
 	display: flex;
 	flex-direction: column;
 	align-content: center;
 	align-items: center;
 }
 .result1 p{
-	margin-top:5px;
+	/* margin-top:10px; */
 	/* border: 1px solid #dcdcdc; */
-	width: 300px;
+	width: 350px;
 	/* background-color: #dcdcdc; */
 	/* border-radius: 8px; */
 	text-align: center;
 	color : rgb(107, 118, 132)
+}
+/* .result2{
+	margin-bottom: 40px;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	align-items: center;
+} */
+.h3title {
+	margin-left:5px;
+	margin:40px auto 5px;
+	border-bottom:0.5px solid black;
+	border-radius:5px;
+	padding:5px;
+	padding-bottom:8px;
+	width:210px;
+	font-size: 16px;
+}
+.h3title span{
+	margin-left:3px;
+	vertical-align:bottom ;
 }
